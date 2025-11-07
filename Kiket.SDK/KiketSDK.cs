@@ -46,11 +46,8 @@ public class KiketSDK
     {
         var builder = WebApplication.CreateBuilder();
 
-        // Configure Kestrel
-        builder.WebHost.ConfigureKestrel(options =>
-        {
-            options.Listen(System.Net.IPAddress.Parse(host), port);
-        });
+        // Configure URLs
+        builder.WebHost.UseUrls($"http://{host}:{port}");
 
         _app = builder.Build();
 
