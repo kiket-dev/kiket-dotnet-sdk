@@ -24,15 +24,12 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
 
       - name: Restore dependencies
-        working-directory: sdk/dotnet
         run: dotnet restore
 
       - name: Build
-        working-directory: sdk/dotnet
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        working-directory: sdk/dotnet
         run: dotnet test --no-build --configuration Release --verbosity normal
 
   build:
@@ -48,19 +45,16 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        working-directory: sdk/dotnet
         run: dotnet restore
 
       - name: Build
-        working-directory: sdk/dotnet
         run: dotnet build --configuration Release --no-restore
 
       - name: Pack
-        working-directory: sdk/dotnet
         run: dotnet pack --configuration Release --no-build --output ./artifacts
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: package
-          path: sdk/dotnet/artifacts/*.nupkg
+          path: artifacts/*.nupkg
