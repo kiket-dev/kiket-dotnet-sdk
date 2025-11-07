@@ -106,7 +106,7 @@ public class KiketSDK
         {
             WebhookAuth.VerifySignature(_config.WebhookSecret, body, context.Request.Headers);
         }
-        catch (AuthenticationException ex)
+        catch (AuthenticationException)
         {
             return Results.Unauthorized();
         }
@@ -139,7 +139,7 @@ public class KiketSDK
         {
             Event = eventName,
             EventVersion = metadata.Version,
-            Headers = context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()),
+            Headers = context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()!),
             Client = client,
             Endpoints = endpoints,
             Settings = _config.Settings,
