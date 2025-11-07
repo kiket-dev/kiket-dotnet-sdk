@@ -60,7 +60,7 @@ jobs:
         run: dotnet pack --configuration Release --no-build --output ./artifacts
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: package
           path: sdk/dotnet/artifacts/*.nupkg
