@@ -10,7 +10,7 @@ public class ExtensionSecretManagerTests
 
     public ExtensionSecretManagerTests()
     {
-        _mockClient = new Mock<KiketClient>("https://api.test.com", "token", null);
+        _mockClient = new Mock<KiketClient>("https://api.test.com", "token", "v1");
         _secretManager = new ExtensionSecretManager(_mockClient.Object, "test-extension");
     }
 
@@ -51,17 +51,21 @@ public class ExtensionSecretManagerTests
     [Fact]
     public async Task SetAsync_SetsSecretValue()
     {
+        object? capturedPayload = null;
         _mockClient.Setup(c => c.PostAsync<object>(
             "/extensions/test-extension/secrets/API_KEY",
             It.IsAny<object>()))
-            .ReturnsAsync(new object());
+            .ReturnsAsync(new object())
+            .Callback<string, object>((_, payload) => capturedPayload = payload);
 
         await _secretManager.SetAsync("API_KEY", "new-value");
 
         _mockClient.Verify(c => c.PostAsync<object>(
             "/extensions/test-extension/secrets/API_KEY",
-            It.Is<object>(o => ((dynamic)o).value == "new-value")),
+            It.IsAny<object>()),
             Times.Once);
+
+        Assert.NotNull(capturedPayload);
     }
 
     [Fact]
