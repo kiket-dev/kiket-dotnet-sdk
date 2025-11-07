@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -139,7 +140,7 @@ public class KiketSDK
             Headers = context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()!),
             Client = client,
             Endpoints = endpoints,
-            Settings = _config.Settings,
+            Settings = _config.Settings ?? new Dictionary<string, object>(),
             ExtensionId = _config.ExtensionId,
             ExtensionVersion = _config.ExtensionVersion,
             Secrets = endpoints.Secrets
