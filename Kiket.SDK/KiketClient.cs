@@ -25,7 +25,7 @@ public class KiketClient : IDisposable
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "kiket-sdk-dotnet/0.1.0");
     }
 
-    public async Task<T?> GetAsync<T>(string path)
+    public virtual async Task<T?> GetAsync<T>(string path)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, path);
         AddAuthHeaders(request);
@@ -36,7 +36,7 @@ public class KiketClient : IDisposable
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
-    public async Task<T?> PostAsync<T>(string path, object data)
+    public virtual async Task<T?> PostAsync<T>(string path, object data)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, path)
         {
@@ -50,7 +50,7 @@ public class KiketClient : IDisposable
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
-    public async Task<T?> PutAsync<T>(string path, object data)
+    public virtual async Task<T?> PutAsync<T>(string path, object data)
     {
         var request = new HttpRequestMessage(HttpMethod.Put, path)
         {
@@ -64,7 +64,7 @@ public class KiketClient : IDisposable
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
-    public async Task<T?> DeleteAsync<T>(string path)
+    public virtual async Task<T?> DeleteAsync<T>(string path)
     {
         var request = new HttpRequestMessage(HttpMethod.Delete, path);
         AddAuthHeaders(request);
