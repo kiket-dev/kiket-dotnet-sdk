@@ -10,7 +10,7 @@ public class ExtensionSecretManagerTests
 
     public ExtensionSecretManagerTests()
     {
-        _mockClient = new Mock<KiketClient>("https://api.test.com", "token", "v1");
+        _mockClient = new Mock<KiketClient>("https://api.test.com", "token", "v1", null);
         _secretManager = new ExtensionSecretManager(_mockClient.Object, "test-extension");
     }
 
