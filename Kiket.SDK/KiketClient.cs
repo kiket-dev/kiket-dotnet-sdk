@@ -11,11 +11,13 @@ public class KiketClient : IDisposable
     private readonly HttpClient _httpClient;
     private readonly string? _workspaceToken;
     private readonly string? _eventVersion;
+    private readonly string? _extensionApiKey;
 
-    public KiketClient(string baseUrl, string? workspaceToken, string? eventVersion = null)
+    public KiketClient(string baseUrl, string? workspaceToken, string? eventVersion = null, string? extensionApiKey = null)
     {
         _workspaceToken = workspaceToken;
         _eventVersion = eventVersion;
+        _extensionApiKey = extensionApiKey;
 
         _httpClient = new HttpClient
         {
@@ -64,6 +66,20 @@ public class KiketClient : IDisposable
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
+    public virtual async Task<T?> PatchAsync<T>(string path, object data)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Patch, path)
+        {
+            Content = JsonContent.Create(data)
+        };
+        AddAuthHeaders(request);
+
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<T>();
+    }
+
     public virtual async Task<T?> DeleteAsync<T>(string path)
     {
         var request = new HttpRequestMessage(HttpMethod.Delete, path);
@@ -85,6 +101,11 @@ public class KiketClient : IDisposable
         if (!string.IsNullOrEmpty(_eventVersion))
         {
             request.Headers.Add("X-Kiket-Event-Version", _eventVersion);
+        }
+
+        if (!string.IsNullOrEmpty(_extensionApiKey))
+        {
+            request.Headers.Add("X-Kiket-API-Key", _extensionApiKey);
         }
     }
 

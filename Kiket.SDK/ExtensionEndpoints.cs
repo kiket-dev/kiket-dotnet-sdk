@@ -44,4 +44,15 @@ public class ExtensionEndpoints
 
         return await _client.GetAsync<object>($"/extensions/{_extensionId}");
     }
+
+    public CustomDataClient CustomData(object projectId)
+    {
+        var value = projectId?.ToString();
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new ArgumentException("projectId is required", nameof(projectId));
+        }
+
+        return new CustomDataClient(_client, value);
+    }
 }
