@@ -27,32 +27,26 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/dotnet-v}" >> $GITHUB_OUTPUT
 
       - name: Verify csproj version matches tag
-        working-directory: sdk/dotnet/Kiket.SDK
         run: |
-          CSPROJ_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" Kiket.SDK.csproj)
+          CSPROJ_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" Kiket.SDK/Kiket.SDK.csproj)
           if [ "$CSPROJ_VERSION" != "${{ steps.version.outputs.VERSION }}" ]; then
             echo "Version mismatch: csproj has $CSPROJ_VERSION but tag is ${{ steps.version.outputs.VERSION }}"
             exit 1
           fi
 
       - name: Restore dependencies
-        working-directory: sdk/dotnet
         run: dotnet restore
 
       - name: Build
-        working-directory: sdk/dotnet
         run: dotnet build --configuration Release --no-restore
 
       - name: Test
-        working-directory: sdk/dotnet
         run: dotnet test --configuration Release --no-build
 
       - name: Pack
-        working-directory: sdk/dotnet
         run: dotnet pack --configuration Release --no-build --output ./artifacts
 
       - name: Publish to GitHub Packages
-        working-directory: sdk/dotnet
         run: dotnet nuget push "artifacts/*.nupkg" --source "https://nuget.pkg.github.com/kiket/kiket-dotnet-sdk/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
