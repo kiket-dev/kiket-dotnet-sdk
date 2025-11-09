@@ -28,7 +28,8 @@ public class KiketSDK
             _config.TelemetryUrl,
             _config.FeedbackHook,
             _config.ExtensionId,
-            _config.ExtensionVersion
+            _config.ExtensionVersion,
+            _config.ExtensionApiKey
         );
     }
 
@@ -160,7 +161,7 @@ public class KiketSDK
         catch (Exception ex)
         {
             var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
-            await _telemetry.RecordAsync(eventName, metadata.Version, "error", duration, ex.Message);
+            await _telemetry.RecordAsync(eventName, metadata.Version, "error", duration, ex.Message, ex.GetType().Name);
 
             return Results.Problem(ex.Message);
         }
@@ -200,7 +201,9 @@ public class KiketSDK
 
         var extensionId = config.ExtensionId ?? manifest?.Id;
         var extensionVersion = config.ExtensionVersion ?? manifest?.Version;
-        var telemetryUrl = config.TelemetryUrl ?? Environment.GetEnvironmentVariable("KIKET_SDK_TELEMETRY_URL");
+        var telemetryUrl = config.TelemetryUrl
+            ?? Environment.GetEnvironmentVariable("KIKET_SDK_TELEMETRY_URL")
+            ?? $"{baseUrl.TrimEnd('/')}/api/v1/ext";
 
         return new SDKConfig
         {

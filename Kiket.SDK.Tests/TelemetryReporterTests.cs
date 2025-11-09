@@ -7,7 +7,7 @@ public class TelemetryReporterTests
     [Fact]
     public async Task RecordAsync_DoesNotThrowWhenDisabled()
     {
-        var reporter = new TelemetryReporter(false, null, null, "ext-id", "1.0.0");
+        var reporter = new TelemetryReporter(false, null, null, "ext-id", "1.0.0", null);
 
         var exception = await Record.ExceptionAsync(
             () => reporter.RecordAsync("test.event", "v1", "ok", 100)
@@ -21,7 +21,7 @@ public class TelemetryReporterTests
     {
         Environment.SetEnvironmentVariable("KIKET_SDK_TELEMETRY_OPTOUT", "1");
 
-        var reporter = new TelemetryReporter(true, null, null, "ext-id", "1.0.0");
+        var reporter = new TelemetryReporter(true, null, null, "ext-id", "1.0.0", null);
 
         var exception = await Record.ExceptionAsync(
             () => reporter.RecordAsync("test.event", "v1", "ok", 100)
@@ -38,7 +38,7 @@ public class TelemetryReporterTests
         TelemetryRecord? capturedRecord = null;
         void FeedbackHook(TelemetryRecord record) => capturedRecord = record;
 
-        var reporter = new TelemetryReporter(true, null, FeedbackHook, "ext-id", "1.0.0");
+        var reporter = new TelemetryReporter(true, null, FeedbackHook, "ext-id", "1.0.0", null);
 
         await reporter.RecordAsync("test.event", "v1", "ok", 100);
 
@@ -57,7 +57,7 @@ public class TelemetryReporterTests
         TelemetryRecord? capturedRecord = null;
         void FeedbackHook(TelemetryRecord record) => capturedRecord = record;
 
-        var reporter = new TelemetryReporter(true, null, FeedbackHook, "ext-id", "1.0.0");
+        var reporter = new TelemetryReporter(true, null, FeedbackHook, "ext-id", "1.0.0", null);
 
         await reporter.RecordAsync("test.event", "v1", "error", 100, "Handler failed");
 
@@ -71,7 +71,7 @@ public class TelemetryReporterTests
     {
         void FeedbackHook(TelemetryRecord record) => throw new Exception("Hook failed");
 
-        var reporter = new TelemetryReporter(true, null, FeedbackHook, "ext-id", "1.0.0");
+        var reporter = new TelemetryReporter(true, null, FeedbackHook, "ext-id", "1.0.0", null);
 
         var exception = await Record.ExceptionAsync(
             () => reporter.RecordAsync("test.event", "v1", "ok", 100)
