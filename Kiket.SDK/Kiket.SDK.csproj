@@ -11,8 +11,8 @@
     <Company>Kiket</Company>
     <Product>Kiket SDK for .NET</Product>
     <Description>Official .NET SDK for building Kiket extensions</Description>
-    <PackageProjectUrl>https://github.com/kiket/kiket-dotnet-sdk</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/kiket/kiket-dotnet-sdk</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/kiket-dev/kiket-dotnet-sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kiket-dev/kiket-dotnet-sdk</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>kiket;extensions;webhooks;workflow;automation</PackageTags>
