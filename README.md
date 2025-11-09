@@ -90,6 +90,38 @@ sdk.Register("issue.created", "v1", async (payload, context) =>
 });
 ```
 
+### SLA Alert Stream
+
+Inspect the SLA alert feed for an installation:
+
+```csharp
+sdk.Register("workflow.sla_status", "v1", async (payload, context) =>
+{
+    var projectId = payload["issue"]["project_id"].ToString();
+    var slaClient = context.Endpoints.SlaEvents(projectId!);
+
+    var events = await slaClient.ListAsync(new SlaEventsListOptions
+    {
+        State = "imminent",
+        Limit = 5
+    });
+
+    if (events?.Data?.Count == 0)
+    {
+        return new { ok = true };
+    }
+
+    var first = events!.Data![0];
+    await context.Endpoints.LogEventAsync("sla.warning", new Dictionary<string, object>
+    {
+        ["issue_id"] = first["issue_id"],
+        ["state"] = first["state"]
+    });
+
+    return new { acknowledged = true };
+});
+```
+
 ## Configuration
 
 ### Environment Variables

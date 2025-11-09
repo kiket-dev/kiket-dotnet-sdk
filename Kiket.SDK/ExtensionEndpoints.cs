@@ -55,4 +55,15 @@ public class ExtensionEndpoints
 
         return new CustomDataClient(_client, value);
     }
+
+    public SlaEventsClient SlaEvents(object projectId)
+    {
+        var value = projectId?.ToString();
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new ArgumentException("projectId is required", nameof(projectId));
+        }
+
+        return new SlaEventsClient(_client, value);
+    }
 }
