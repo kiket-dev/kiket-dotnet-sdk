@@ -66,4 +66,10 @@ public class ExtensionEndpoints
 
         return new SlaEventsClient(_client, value);
     }
+
+    public async Task<RateLimitInfo?> GetRateLimitAsync()
+    {
+        var response = await _client.GetAsync<RateLimitResponse>("/api/v1/ext/rate_limit");
+        return response?.RateLimit;
+    }
 }

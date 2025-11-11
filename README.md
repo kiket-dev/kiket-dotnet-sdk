@@ -11,6 +11,7 @@
 - 🔁 **Version-aware routing** – register multiple handlers per event and propagate version headers on outbound calls.
 - 📦 **Manifest-aware defaults** – automatically loads `extension.yaml`/`manifest.yaml`, applies configuration defaults, and hydrates secrets from `KIKET_SECRET_*` environment variables.
 - 📇 **Custom data client** – call `/api/v1/ext/custom_data/...` with `context.Endpoints.CustomData(projectId)` using the configured extension API key.
+- 📉 **Rate-limit helper** – call `context.Endpoints.GetRateLimitAsync()` to inspect `/api/v1/ext/rate_limit` before launching heavy jobs.
 - 🧱 **Typed & documented** – designed for .NET 8.0 with full type safety and rich XML documentation.
 - 📊 **Telemetry & feedback hooks** – capture handler duration/success metrics automatically.
 
@@ -244,3 +245,25 @@ When you are ready to cut a release:
 ## License
 
 MIT
+### Rate-Limit Helper
+
+Gate expensive automation against the current window:
+
+```csharp
+sdk.Register("automation.dispatch", "v1", async (_payload, context) =>
+{
+    var limits = await context.Endpoints.GetRateLimitAsync();
+    if (limits is not null && limits.Remaining < 5)
+    {
+        await context.Endpoints.LogEventAsync("rate_limited", new()
+        {
+            ["remaining"] = limits.Remaining,
+            ["reset_in"] = limits.ResetIn
+        });
+        return new { deferred = true };
+    }
+
+    // Continue with the heavy work
+    return new { ok = true };
+});
+```
