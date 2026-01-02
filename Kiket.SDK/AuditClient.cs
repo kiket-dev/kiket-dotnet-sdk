@@ -63,7 +63,18 @@ namespace Kiket.SDK
         /// </summary>
         public async Task<BlockchainProof> GetProofAsync(long recordId)
         {
-            var response = await _client.GetAsync($"/api/v1/audit/records/{recordId}/proof");
+            return await GetProofAsync(recordId, "AuditLog");
+        }
+
+        /// <summary>
+        /// Get the blockchain proof for a specific audit record.
+        /// </summary>
+        /// <param name="recordId">The ID of the audit record</param>
+        /// <param name="recordType">Type of record ("AuditLog" or "AIAuditLog")</param>
+        public async Task<BlockchainProof> GetProofAsync(long recordId, string recordType)
+        {
+            var query = recordType != "AuditLog" ? $"?record_type={recordType}" : "";
+            var response = await _client.GetAsync($"/api/v1/audit/records/{recordId}/proof{query}");
             return JsonSerializer.Deserialize<BlockchainProof>(response)!;
         }
 
