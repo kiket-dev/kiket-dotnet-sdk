@@ -198,8 +198,36 @@ public class HandlerContext
     public string? ExtensionId { get; }
     public string? ExtensionVersion { get; }
     public ExtensionSecretManager Secrets { get; }
+    public string? Secret(string key);  // Secret helper with payload-first fallback
 }
 ```
+
+### Secret Helper
+
+The `Secret()` method provides a simple way to retrieve secrets with automatic fallback:
+
+```csharp
+// Checks payload secrets first (per-org config), falls back to ENV
+var slackToken = context.Secret("SLACK_BOT_TOKEN");
+
+// Example usage
+sdk.Register("issue.created", "v1", async (payload, context) =>
+{
+    var apiKey = context.Secret("API_KEY");
+    if (apiKey is null)
+    {
+        throw new InvalidOperationException("API_KEY not configured");
+    }
+    // Use apiKey...
+    return new { ok = true };
+});
+```
+
+The lookup order is:
+1. **Payload secrets** (per-org configuration from `payload["secrets"]`)
+2. **Environment variables** (extension defaults via `Environment.GetEnvironmentVariable()`)
+
+This allows organizations to override extension defaults with their own credentials.
 
 ### ExtensionEndpoints
 
