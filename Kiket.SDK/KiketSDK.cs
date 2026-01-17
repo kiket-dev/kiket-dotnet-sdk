@@ -28,8 +28,7 @@ public class KiketSDK
             _config.TelemetryUrl,
             _config.FeedbackHook,
             _config.ExtensionId,
-            _config.ExtensionVersion,
-            _config.ExtensionApiKey
+            _config.ExtensionVersion
         );
     }
 
@@ -131,7 +130,7 @@ public class KiketSDK
         var payload = JsonSerializer.Deserialize<Dictionary<string, object>>(body);
 
         // Create client and context
-        var client = new KiketClient(_config.BaseUrl, _config.WorkspaceToken, metadata.Version, _config.ExtensionApiKey);
+        var client = new KiketClient(_config.BaseUrl, _config.WorkspaceToken, metadata.Version);
         var endpoints = new ExtensionEndpoints(client, _config.ExtensionId, metadata.Version);
 
         var handlerContext = new HandlerContext
@@ -174,7 +173,6 @@ public class KiketSDK
         var webhookSecret = config.WebhookSecret
             ?? manifest?.DeliverySecret
             ?? Environment.GetEnvironmentVariable("KIKET_WEBHOOK_SECRET");
-        var extensionApiKey = config.ExtensionApiKey ?? Environment.GetEnvironmentVariable("KIKET_EXTENSION_API_KEY");
 
         var settings = new Dictionary<string, object>();
         if (manifest != null)
@@ -217,8 +215,7 @@ public class KiketSDK
             AutoEnvSecrets = config.AutoEnvSecrets,
             TelemetryEnabled = config.TelemetryEnabled,
             FeedbackHook = config.FeedbackHook,
-            TelemetryUrl = telemetryUrl,
-            ExtensionApiKey = extensionApiKey
+            TelemetryUrl = telemetryUrl
         };
     }
 }

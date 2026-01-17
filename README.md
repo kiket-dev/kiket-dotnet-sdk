@@ -10,7 +10,7 @@
 - 🌐 **Built-in ASP.NET Core app** – serve extension webhooks locally or in production without extra wiring.
 - 🔁 **Version-aware routing** – register multiple handlers per event and propagate version headers on outbound calls.
 - 📦 **Manifest-aware defaults** – automatically loads `extension.yaml`/`manifest.yaml`, applies configuration defaults, and hydrates secrets from `KIKET_SECRET_*` environment variables.
-- 📇 **Custom data client** – call `/api/v1/ext/custom_data/...` with `context.Endpoints.CustomData(projectId)` using the configured extension API key.
+- 📇 **Custom data client** – call `/api/v1/ext/custom_data/...` with `context.Endpoints.CustomData(projectId)` using the runtime token.
 - 📉 **Rate-limit helper** – call `context.Endpoints.GetRateLimitAsync()` to inspect `/api/v1/ext/rate_limit` before launching heavy jobs.
 - 🧱 **Typed & documented** – designed for .NET 8.0 with full type safety and rich XML documentation.
 - 📊 **Telemetry & feedback hooks** – capture handler duration/success metrics automatically.
@@ -26,9 +26,7 @@ using Kiket.SDK;
 
 var sdk = new KiketSDK(new SDKConfig
 {
-    WebhookSecret = "sh_123",
     WorkspaceToken = "wk_test",
-    ExtensionApiKey = Environment.GetEnvironmentVariable("KIKET_EXTENSION_API_KEY"),
     ExtensionId = "com.example.marketing",
     ExtensionVersion = "1.0.0"
 });
@@ -67,7 +65,7 @@ sdk.Run("0.0.0.0", 8080);
 
 ### Custom Data Client
 
-When your manifest declares `custom_data.permissions`, set `ExtensionApiKey` (or the `KIKET_EXTENSION_API_KEY` environment variable) so outbound calls to the extension API include `X-Kiket-API-Key`. Use the helper to work with module data:
+When your manifest declares `custom_data.permissions`, the SDK automatically uses the runtime token provided in the webhook payload for API calls via `context.Client`. Use the helper to work with module data:
 
 ```csharp
 sdk.Register("issue.created", "v1", async (payload, context) =>
@@ -129,7 +127,6 @@ sdk.Register("workflow.sla_status", "v1", async (payload, context) =>
 
 - `KIKET_WEBHOOK_SECRET` – Webhook HMAC secret for signature verification
 - `KIKET_WORKSPACE_TOKEN` – Workspace token for API authentication
-- `KIKET_EXTENSION_API_KEY` – Extension API key for `/api/v1/ext/**` endpoints (custom data client)
 - `KIKET_BASE_URL` – Kiket API base URL (defaults to `https://kiket.dev`)
 - `KIKET_SDK_TELEMETRY_URL` – Telemetry reporting endpoint (optional)
 - `KIKET_SDK_TELEMETRY_OPTOUT` – Set to `1` to disable telemetry

@@ -11,13 +11,13 @@ public class KiketClient : IDisposable
     private readonly HttpClient _httpClient;
     private readonly string? _workspaceToken;
     private readonly string? _eventVersion;
-    private readonly string? _extensionApiKey;
+    private readonly string? _runtimeToken;
 
-    public KiketClient(string baseUrl, string? workspaceToken, string? eventVersion = null, string? extensionApiKey = null)
+    public KiketClient(string baseUrl, string? workspaceToken, string? eventVersion = null, string? runtimeToken = null)
     {
         _workspaceToken = workspaceToken;
         _eventVersion = eventVersion;
-        _extensionApiKey = extensionApiKey;
+        _runtimeToken = runtimeToken;
 
         _httpClient = new HttpClient
         {
@@ -103,9 +103,9 @@ public class KiketClient : IDisposable
             request.Headers.Add("X-Kiket-Event-Version", _eventVersion);
         }
 
-        if (!string.IsNullOrEmpty(_extensionApiKey))
+        if (!string.IsNullOrEmpty(_runtimeToken))
         {
-            request.Headers.Add("X-Kiket-API-Key", _extensionApiKey);
+            request.Headers.Add("X-Kiket-Runtime-Token", _runtimeToken);
         }
     }
 

@@ -29,7 +29,6 @@ public class TelemetryReporter
     private readonly bool _enabled;
     private readonly HttpClient? _httpClient;
     private readonly string? _endpoint;
-    private readonly string? _apiKey;
     private readonly Action<TelemetryRecord>? _feedbackHook;
     private readonly string? _extensionId;
     private readonly string? _extensionVersion;
@@ -39,15 +38,13 @@ public class TelemetryReporter
         string? telemetryUrl,
         Action<TelemetryRecord>? feedbackHook,
         string? extensionId,
-        string? extensionVersion,
-        string? extensionApiKey)
+        string? extensionVersion)
     {
         var optOut = Environment.GetEnvironmentVariable("KIKET_SDK_TELEMETRY_OPTOUT") == "1";
         _enabled = enabled && !optOut;
         _feedbackHook = feedbackHook;
         _extensionId = extensionId;
         _extensionVersion = extensionVersion;
-        _apiKey = extensionApiKey;
 
         if (!string.IsNullOrEmpty(telemetryUrl))
         {
@@ -99,10 +96,6 @@ public class TelemetryReporter
                         PropertyNamingPolicy = null
                     })
                 };
-                if (!string.IsNullOrEmpty(_apiKey))
-                {
-                    request.Headers.Add("X-Kiket-API-Key", _apiKey);
-                }
                 await _httpClient.SendAsync(request);
             }
             catch (Exception ex)
