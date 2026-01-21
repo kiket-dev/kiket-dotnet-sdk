@@ -44,8 +44,7 @@ namespace Kiket.SDK
                 queryParams.Add($"to={options.To.Value:O}");
 
             var query = string.Join("&", queryParams);
-            var response = await _client.GetAsync($"/api/v1/audit/anchors?{query}");
-            return JsonSerializer.Deserialize<ListAnchorsResult>(response)!;
+            return (await _client.GetAsync<ListAnchorsResult>($"/api/v1/audit/anchors?{query}"))!;
         }
 
         /// <summary>
@@ -54,8 +53,7 @@ namespace Kiket.SDK
         public async Task<BlockchainAnchor> GetAnchorAsync(string merkleRoot, bool includeRecords = false)
         {
             var query = includeRecords ? "?include_records=true" : "";
-            var response = await _client.GetAsync($"/api/v1/audit/anchors/{merkleRoot}{query}");
-            return JsonSerializer.Deserialize<BlockchainAnchor>(response)!;
+            return (await _client.GetAsync<BlockchainAnchor>($"/api/v1/audit/anchors/{merkleRoot}{query}"))!;
         }
 
         /// <summary>
@@ -74,8 +72,7 @@ namespace Kiket.SDK
         public async Task<BlockchainProof> GetProofAsync(long recordId, string recordType)
         {
             var query = recordType != "AuditLog" ? $"?record_type={recordType}" : "";
-            var response = await _client.GetAsync($"/api/v1/audit/records/{recordId}/proof{query}");
-            return JsonSerializer.Deserialize<BlockchainProof>(response)!;
+            return (await _client.GetAsync<BlockchainProof>($"/api/v1/audit/records/{recordId}/proof{query}"))!;
         }
 
         /// <summary>
@@ -92,8 +89,7 @@ namespace Kiket.SDK
                 tx_hash = proof.TxHash
             };
 
-            var response = await _client.PostAsync("/api/v1/audit/verify", JsonSerializer.Serialize(payload));
-            return JsonSerializer.Deserialize<VerificationResult>(response)!;
+            return (await _client.PostAsync<VerificationResult>("/api/v1/audit/verify", payload))!;
         }
 
         /// <summary>
