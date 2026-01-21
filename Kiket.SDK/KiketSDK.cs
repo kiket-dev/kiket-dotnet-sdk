@@ -99,10 +99,22 @@ public class KiketSDK
         using var reader = new StreamReader(context.Request.Body);
         var body = await reader.ReadToEndAsync();
 
-        // Verify signature
+        // Parse payload
+        Dictionary<string, object?>? payload;
         try
         {
-            WebhookAuth.VerifySignature(_config.WebhookSecret, body, context.Request.Headers);
+            payload = JsonSerializer.Deserialize<Dictionary<string, object?>>(body);
+        }
+        catch (JsonException)
+        {
+            return Results.BadRequest(new { error = "Invalid JSON payload" });
+        }
+
+        // Verify JWT runtime token
+        WebhookAuth.JwtPayload? jwtPayload = null;
+        try
+        {
+            jwtPayload = WebhookAuth.VerifyRuntimeToken(payload!, _config.BaseUrl ?? "https://kiket.dev");
         }
         catch (AuthenticationException)
         {
@@ -126,8 +138,8 @@ public class KiketSDK
             return Results.NotFound(new { error = $"No handler registered for event '{eventName}' with version '{requestedVersion}'" });
         }
 
-        // Parse payload
-        var payload = JsonSerializer.Deserialize<Dictionary<string, object>>(body);
+        // Build auth context
+        var authContext = jwtPayload != null ? WebhookAuth.BuildAuthContext(jwtPayload, payload!) : null;
 
         // Create client and context
         var client = new KiketClient(_config.BaseUrl, _config.WorkspaceToken, metadata.Version);
@@ -170,9 +182,6 @@ public class KiketSDK
     {
         var baseUrl = config.BaseUrl ?? Environment.GetEnvironmentVariable("KIKET_BASE_URL") ?? "https://kiket.dev";
         var workspaceToken = config.WorkspaceToken ?? Environment.GetEnvironmentVariable("KIKET_WORKSPACE_TOKEN");
-        var webhookSecret = config.WebhookSecret
-            ?? manifest?.DeliverySecret
-            ?? Environment.GetEnvironmentVariable("KIKET_WEBHOOK_SECRET");
 
         var settings = new Dictionary<string, object>();
         if (manifest != null)
@@ -205,7 +214,6 @@ public class KiketSDK
 
         return new SDKConfig
         {
-            WebhookSecret = webhookSecret,
             WorkspaceToken = workspaceToken,
             BaseUrl = baseUrl,
             Settings = settings,

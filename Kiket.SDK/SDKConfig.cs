@@ -5,7 +5,6 @@ namespace Kiket.SDK;
 /// </summary>
 public class SDKConfig
 {
-    public string? WebhookSecret { get; set; }
     public string? WorkspaceToken { get; set; }
     public string BaseUrl { get; set; } = "https://kiket.dev";
     public Dictionary<string, object>? Settings { get; set; }

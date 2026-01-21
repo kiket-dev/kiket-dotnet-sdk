@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <PackageReference Include="YamlDotNet" Version="15.1.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
 
 </Project>
