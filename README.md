@@ -199,6 +199,42 @@ public class HandlerContext
 }
 ```
 
+### Response Helpers
+
+Use the `ExtensionResponse` class to build properly formatted responses:
+
+```csharp
+using Kiket.SDK.Responses;
+
+// Simple allow
+return ExtensionResponse.Allow().Build();
+
+// Allow with message and data
+return ExtensionResponse.Allow()
+    .WithMessage("Successfully configured")
+    .WithData("routeId", 123)
+    .Build();
+
+// Allow with output fields (displayed in configuration UI)
+return ExtensionResponse.Allow()
+    .WithMessage("Mailjet configured successfully")
+    .WithData("routeId", route.Id)
+    .WithOutputField("inbound_email", route.Email)
+    .Build();
+
+// Deny with error details
+return ExtensionResponse.Deny("Invalid credentials")
+    .WithData("errorCode", "AUTH_FAILED")
+    .Build();
+
+// Pending for async operations
+return ExtensionResponse.Pending("Awaiting approval")
+    .WithData("jobId", "abc123")
+    .Build();
+```
+
+Output fields are displayed in the extension configuration UI after setup, allowing extensions to expose generated data like email addresses, webhook URLs, or status information.
+
 ### Secret Helper
 
 The `Secret()` method provides a simple way to retrieve secrets with automatic fallback:
